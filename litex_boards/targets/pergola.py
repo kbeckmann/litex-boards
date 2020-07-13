@@ -22,6 +22,7 @@ from litex.soc.integration.soc_core import *
 from litex.soc.integration.soc_sdram import *
 from litex.soc.integration.builder import *
 from litex.soc.cores.led import LedChaser
+from litex.soc.cores.spi_ram import SpiRam
 
 from litedram import modules as litedram_modules
 from litedram.phy import GENSDRPHY
@@ -78,6 +79,29 @@ class BaseSoC(SoCCore):
             pads         = Cat(*[platform.request("user_led", i) for i in range(8)]),
             sys_clk_freq = sys_clk_freq)
         self.add_csr("leds")
+
+        # PSRAM
+
+        psram_size = int((64/8)*1024*1024)
+
+        self.add_csr("main_ram")
+        self.submodules.main_ram = SpiRam(
+            platform.request("spiram4x", 0),
+            dummy=6,
+            div=platform.spiflash_clock_div,
+            endianness="little")
+        self.register_mem("main_ram", self.mem_map["main_ram"],
+            self.main_ram.bus, psram_size)
+
+        self.mem_map["extra_ram1"] = self.mem_map["main_ram"] + psram_size
+        self.add_csr("extra_ram1")
+        self.submodules.extra_ram1 = SpiRam(
+            platform.request("spiram4x", 1),
+            dummy=6,
+            div=platform.spiflash_clock_div,
+            endianness="little")
+        self.register_mem("extra_ram1", self.mem_map["extra_ram1"],
+            self.extra_ram1.bus, psram_size)
 
 # Build --------------------------------------------------------------------------------------------
 

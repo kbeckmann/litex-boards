@@ -30,6 +30,42 @@ _io = [
         Subsignal("pullup", Pins("B7 C7")),
         IOStandard("LVCMOS33")
     ),
+
+
+    # Built-in #1
+    # cs="A9", clk="B9", mosi="B10", miso="A10", wp="A11", hold="B8",
+    ("spiram", 0,
+        Subsignal("cs_n", Pins("A9"), IOStandard("LVCMOS33")),
+        Subsignal("mosi", Pins("B10"), IOStandard("LVCMOS33")), # io0
+        Subsignal("miso", Pins("A10"), IOStandard("LVCMOS33")), # io1
+        Subsignal("clk",  Pins("B9"), IOStandard("LVCMOS33")),
+        
+        Subsignal("wp",   Pins("A11"), IOStandard("LVCMOS33")), # io2
+        Subsignal("hold", Pins("B8"), IOStandard("LVCMOS33")), # io3
+    ),
+    ("spiram4x", 0,
+        Subsignal("cs_n", Pins("A9"), IOStandard("LVCMOS33")),
+        Subsignal("clk",  Pins("B9"), IOStandard("LVCMOS33")),
+        Subsignal("dq",   Pins("B10 A10 A11 B8"), IOStandard("LVCMOS33")),
+    ),
+
+    # Built-in #2
+    # cs="A2", clk="A4", mosi="A5", miso="B3", wp="B4", hold="A3",
+    ("spiram", 1,
+        Subsignal("cs_n", Pins("A2"), IOStandard("LVCMOS33")),
+        Subsignal("mosi", Pins("A5"), IOStandard("LVCMOS33")), # io0
+        Subsignal("miso", Pins("B3"), IOStandard("LVCMOS33")), # io1
+        Subsignal("clk",  Pins("A4"), IOStandard("LVCMOS33")),
+        
+        Subsignal("wp",   Pins("B4"), IOStandard("LVCMOS33")), # io2
+        Subsignal("hold", Pins("A3"), IOStandard("LVCMOS33")), # io3
+    ),
+    ("spiram4x", 1,
+        Subsignal("cs_n", Pins("A2"), IOStandard("LVCMOS33")),
+        Subsignal("clk",  Pins("A4"), IOStandard("LVCMOS33")),
+        Subsignal("dq",   Pins("A5 B3 B4 A3"), IOStandard("LVCMOS33")),
+    ),
+
 ]
 
 # Platform -----------------------------------------------------------------------------------------
@@ -56,6 +92,7 @@ class ApolloProgrammer():
 class Platform(LatticePlatform):
     default_clk_name   = "clk16"
     default_clk_period = 1e9/16e6
+    spiflash_clock_div = 2
 
     def __init__(self, device="LFE5U-12F", **kwargs):
         LatticePlatform.__init__(self, device + "-8BG256", _io, **kwargs)
